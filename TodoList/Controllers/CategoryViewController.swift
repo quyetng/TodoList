@@ -15,6 +15,7 @@ class CategoryViewController: UITableViewController {
     //var categoryArray = [Category]()
     
     var categoryArray = [Category]()
+ 
     
     let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
     
@@ -43,7 +44,20 @@ class CategoryViewController: UITableViewController {
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         //categoryArray[indexPath.row]
+        
+        performSegue(withIdentifier: "goToItems", sender: self)
+        
+        
     }
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        let destinationVC = segue.destination as! ViewController
+        
+        if let indexPath = tableView.indexPathForSelectedRow {
+            destinationVC.selectedCategory = categoryArray[indexPath.row]
+        }
+    }
+    
     @IBAction func addButtonPressed(_ sender: UIBarButtonItem) {
         var textField = UITextField()
         
@@ -93,6 +107,9 @@ class CategoryViewController: UITableViewController {
         tableView.reloadData()
 
     }
+    
+    
+    
 
 
 }
