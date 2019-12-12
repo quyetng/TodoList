@@ -26,6 +26,7 @@ class ViewController: SwipeTableViewController {
          }
      }
     
+    @IBOutlet weak var searchBar: UISearchBar!
     //let defaults = UserDefaults.standard
     
 //    let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
@@ -45,6 +46,27 @@ class ViewController: SwipeTableViewController {
         
     }
 
+    override func viewWillAppear(_ animated: Bool) {
+        if let colorHex = selectedCategory?.colorCode {
+            
+            title = selectedCategory!.name
+            guard let navBar = navigationController?.navigationBar else {
+                fatalError("Navigation controller does not exist")
+                
+            }
+            
+            if let navBarColor = UIColor(hexString: colorHex) {
+                navBar.barTintColor = navBarColor
+                
+                navBar.tintColor = ContrastColorOf(navBarColor, returnFlat: true)
+                
+                navBar.largeTitleTextAttributes = [NSAttributedString.Key.foregroundColor : ContrastColorOf(navBarColor, returnFlat: true)]
+                
+                searchBar.barTintColor = navBarColor
+            }
+        }
+    }
+    
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return todoItems?.count ?? 1
     }
