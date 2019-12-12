@@ -10,7 +10,7 @@ import UIKit
 //import CoreData
 import RealmSwift
 
-class ViewController: UITableViewController {
+class ViewController: SwipeTableViewController {
 
     //var itemArray = ["Find Mike", "Buy Eggs", "Clean House"]
     //var itemArray = [Item]()
@@ -27,7 +27,7 @@ class ViewController: UITableViewController {
     
     //let defaults = UserDefaults.standard
     
-    let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
+//    let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
     
     //let dataFilePath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first?.appendingPathComponent("Items.plist")
     
@@ -50,7 +50,8 @@ class ViewController: UITableViewController {
 
         
 
-        let cell = tableView.dequeueReusableCell(withIdentifier: "ToDoItemCell", for: indexPath)
+        //let cell = tableView.dequeueReusableCell(withIdentifier: "ToDoItemCell", for: indexPath)
+        let cell = super.tableView(tableView, cellForRowAt: indexPath)
 
         if let item = todoItems?[indexPath.row] {
             cell.textLabel?.text = item.title
@@ -60,10 +61,6 @@ class ViewController: UITableViewController {
         }
 
         //cell.textLabel?.text = itemArray[indexPath.row].title
-
-       
-        
-        
 
         
         return cell
@@ -136,7 +133,7 @@ class ViewController: UITableViewController {
         do {
             //let data = try encoder.encode(itemArray)
             //try data.write(to: dataFilePath!)
-            try context.save()
+            //try context.save()
         } catch {
             //print("Error encoding item array, \(error)")
             print("Error saving context, \(error)")
@@ -151,36 +148,51 @@ class ViewController: UITableViewController {
         tableView.reloadData()
 
     }
+    
+    override func updateModel(at indexPath: IndexPath) {
+        if let itemForDeletion = self.todoItems?[indexPath.row] {
+            do {
+                try self.realm.write {
+                    self.realm.delete(itemForDeletion)
+                }
+            } catch {
+                print("Error delete category, \(error)")
+            }
+            //tableView.reloadData()
+            
+        }
+    }
+    
 }
 
 
  //MARK: - Search bar methods
-extension ViewController: UISearchBarDelegate {
-
-    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
-        
-        todoItems = todoItems?.filter("title CONTAINS[cd] %@", searchBar.text!).sorted(byKeyPath: "dateCreated", ascending: true)
-        
-        tableView.reloadData()
-//        let request: NSFetchRequest<Item> = Item.fetchRequest()
+//extension ViewController: UISearchBarDelegate {
 //
-//        let predicate = NSPredicate(format: "title CONTAINS[cd] %@", searchBar.text!)
+//    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
 //
-//        request.sortDescriptors = [NSSortDescriptor(key: "title", ascending: true)]
+//        todoItems = todoItems?.filter("title CONTAINS[cd] %@", searchBar.text!).sorted(byKeyPath: "dateCreated", ascending: true)
 //
-//        loadItem(with: request, predicate: predicate)
-
-    }
-
-    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
-        if searchBar.text?.count == 0 {
-            loadItem()
-
-            DispatchQueue.main.async {
-                searchBar.resignFirstResponder()
-            }
-
-        }
-   }
-    
-}
+//        tableView.reloadData()
+////        let request: NSFetchRequest<Item> = Item.fetchRequest()
+////
+////        let predicate = NSPredicate(format: "title CONTAINS[cd] %@", searchBar.text!)
+////
+////        request.sortDescriptors = [NSSortDescriptor(key: "title", ascending: true)]
+////
+////        loadItem(with: request, predicate: predicate)
+//
+//    }
+//
+//    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+//        if searchBar.text?.count == 0 {
+//            loadItem()
+//
+//            DispatchQueue.main.async {
+//                searchBar.resignFirstResponder()
+//            }
+//
+//        }
+//   }
+//
+//}
